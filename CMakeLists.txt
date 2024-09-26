@@ -11,10 +11,10 @@ if (IO_BACKEND MATCHES "adios2")
 endif (IO_BACKEND MATCHES "adios2")
 
 
-set(BUILD_TARGET "mpi" CACHE STRING "Target for acceleration (mpi (default) or gpu)")
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS mpi gpu)
+set(BUILD_TARGET "mpi_cpu" CACHE STRING "Target for acceleration (mpi_cpu (default) or mpi_gpu)")
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS mpi_cpu mpi_gpu)
 
-if (BUILD_TARGET MATCHES "gpu")
+if (BUILD_TARGET MATCHES "mpi_gpu")
   option(ENABLE_OPENACC "Allow user to activate/deactivate OpenACC support" ON)
   option(ENABLE_CUDA "Allow user to activate/deactivate CUDA support" ON)
   option(ENABLE_MANAGED "Allow user to activate/deactivate automatic memory managment from NVHPC" OFF)
@@ -26,7 +26,7 @@ if (BUILD_TARGET MATCHES "gpu")
     message(STATUS "After enable CUDA")
   endif()
 
-endif(BUILD_TARGET MATCHES "gpu")
+endif(BUILD_TARGET MATCHES "mpi_gpu")
 
 set (ENABLE_PROFILER "OFF" CACHE STRING "Activate/select the profiler")
 set_property(CACHE ENABLE_PROFILER PROPERTY STRINGS OFF caliper)
@@ -34,8 +34,8 @@ option(ENABLE_INPLACE "Enable in-place operation of FFT" OFF)
 option(HALO_DEBUG "Enable halo debugging options" OFF)
 option(EVEN "Padded alltoall transpose operations" OFF)
 option(BUILD_SHARED_LIBS "Set ON to build a shared library" OFF)
-set (IO_BACKEND "mpi" CACHE STRING "Default IO backend (mpi (default) or adios2)")
-set_property(CACHE IO_BACKEND PROPERTY STRINGS mpi adios2)
+set (IO_BACKEND "mpi_cpu" CACHE STRING "Default IO backend (mpi_cpu (default) or adios2)")
+set_property(CACHE IO_BACKEND PROPERTY STRINGS mpi_cpu adios2)
 
 set(AUTHOR "Stefano Rolfo;Charles Moulinec;Paul Bartholomew")
 set(AUTHOR_DETAILS "stefano.rolfo@stfc.ac.uk;charles.moulinec@stfc.ac.uk;p.bartholomew@epcc.ed.ac.uk")
@@ -64,18 +64,18 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/compilers" "${CMAKE_SOURCE_DIR}/cmake/fft")
 
-if (BUILD_TARGET MATCHES "gpu")
+if (BUILD_TARGET MATCHES "mpi_gpu")
   include(D2D_GPU)
-endif (BUILD_TARGET MATCHES "gpu")
+endif (BUILD_TARGET MATCHES "mpi_gpu")
 
 include(D2D_MPI)
 
 # FFT options
-if (BUILD_TARGET MATCHES "gpu")
+if (BUILD_TARGET MATCHES "mpi_gpu")
   set(FFT_Choice "cufft" CACHE STRING "FFT for XCompact3d project (with GPU cufft is the default)")
 else ()
   set(FFT_Choice "generic" CACHE STRING "FFT for XCompact3d project (generic is the default)")
-endif (BUILD_TARGET MATCHES "gpu")
+endif (BUILD_TARGET MATCHES "mpi_gpu")
 set_property(CACHE FFT_Choice PROPERTY STRINGS generic fftw fftw_f03 mkl cufft)
 
 # Set now compilers flags

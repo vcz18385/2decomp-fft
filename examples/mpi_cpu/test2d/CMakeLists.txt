@@ -1,0 +1,31 @@
+file(GLOB files_test2d test2d.f90)
+file(GLOB files_timing2d_real timing2d_real.f90)
+file(GLOB files_timing2d_complex timing2d_complex.f90)
+
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+add_executable(test2d ${files_test2d})
+add_executable(timing2d_real ${files_timing2d_real})
+add_executable(timing2d_complex ${files_timing2d_complex})
+
+target_link_libraries(test2d PRIVATE decomp2d_cpu examples_utils)
+target_link_libraries(timing2d_real PRIVATE decomp2d_cpu examples_utils)
+target_link_libraries(timing2d_complex PRIVATE decomp2d_cpu examples_utils)
+
+# Run the test(s)
+set(run_dir "${test_dir}/test2d")
+message(STATUS "Example dir ${run_dir}")
+file(MAKE_DIRECTORY ${run_dir})
+add_test(NAME test2d COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} $<TARGET_FILE:test2d> ${TEST_ARGUMENTS} WORKING_DIRECTORY ${run_dir})
+
+# Run the test(s)
+set(run_dir "${test_dir}/timing2d_real")
+message(STATUS "Example dir ${run_dir}")
+file(MAKE_DIRECTORY ${run_dir})
+add_test(NAME timing2d_real COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} $<TARGET_FILE:timing2d_real> ${TEST_ARGUMENTS} WORKING_DIRECTORY ${run_dir})
+
+# Run the test(s)
+set(run_dir "${test_dir}/timing2d_complex")
+message(STATUS "Example dir ${run_dir}")
+file(MAKE_DIRECTORY ${run_dir})
+add_test(NAME timing2d_complex COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} $<TARGET_FILE:timing2d_complex> ${TEST_ARGUMENTS} WORKING_DIRECTORY ${run_dir})
